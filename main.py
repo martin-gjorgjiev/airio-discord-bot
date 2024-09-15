@@ -40,7 +40,7 @@ async def bans_hourly() -> None:
             if datetime.strptime(row[3],'%Y-%m-%d %H:%M:%S')>last_hour_date_time:
                 if row[4]==0:
                     row[4]='half'
-                msgStr = f"{row[3]}: User `{row[0]}` recieved a {row[4]} day ban for reason '{row[5]}'. Responsible limad `{row[2]}`."
+                msgStr = f"{row[3]}: User `{row[0]}` recieved a {row[4]} day ban for reason \"{row[5]}\". Responsible limad `{row[2]}`."
                 await channel.send(msgStr)
 
 # main

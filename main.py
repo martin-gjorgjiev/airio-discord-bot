@@ -31,7 +31,7 @@ async def on_ready() -> None:
 # ban list check task
 @tasks.loop(hours = 1)
 async def bans_hourly() -> None:
-    logger.info('Hourly called')
+    logger.info('Hourly bans called')
     channel = client.get_channel(int(CHANNEL))
     last_hour_date_time = datetime.now() - timedelta(hours = 1)
     with open(str(AIRIO)+'/Airio.ban.txt',newline='') as csvfile:

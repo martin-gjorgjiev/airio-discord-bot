@@ -38,8 +38,10 @@ async def bans_hourly() -> None:
         reader = csv.reader(csvfile,delimiter='	')
         for row in reader:
             if datetime.strptime(row[3],'%Y-%m-%d %H:%M:%S')>last_hour_date_time:
-                if row[4]==0:
-                    row[4]='half'
+                if row[4]=="0":
+                    row[4]="half"
+                if row[5]=="":
+                    row[5]="unspecified"
                 msgStr = f"{row[3]}: User `{row[0]}` recieved a {row[4]} day ban for reason \"{row[5]}\". Responsible limad `{row[2]}`."
                 await channel.send(msgStr)
 

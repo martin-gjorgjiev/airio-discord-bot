@@ -7,6 +7,7 @@ import asyncio
 import csv
 from datetime import datetime,timedelta
 import logging
+from commands import command_resolve
 
 # files from env
 load_dotenv()
@@ -21,12 +22,35 @@ client: Client = Client(intents=intents)
 logger=logging.getLogger(__name__)
 logging.basicConfig(filename='log.txt', level=logging.NOTSET,format='%(asctime)s - %(message)s',datefmt='%Y-%m-%d %H:%M:%S')
 
+# messages
+async def send_message(message: Message, user_message: str) -> None:
+    if not user_message:
+        logger.info('(Message was empty because intents were not enabled probably)')
+        return
+
+    try:
+        response: str = command_resolve(user_message)
+        await message.channel.send(response)
+    except Exception as e:
+        logger.info(e)
+
 # on start
 @client.event
 async def on_ready() -> None:
     print(f'{client.user} is now running!')
     logger.info(f'{client.user} is now running!')
     bans_hourly.start()
+
+@client.event
+async def on_message(message: Message) -> None:
+    if message.author == client.user:
+        return
+
+    #username: str = str(message.author)
+    user_message: str = message.content
+    #channel: str = str(message.channel)
+
+    await send_message(message, user_message)
 
 # ban list check task
 @tasks.loop(hours = 1)

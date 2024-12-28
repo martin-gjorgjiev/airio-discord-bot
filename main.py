@@ -13,7 +13,8 @@ from commands import command_resolve
 load_dotenv()
 TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 AIRIO: Final[str] = os.getenv('AIRIO_FOLDER')
-CHANNEL: Final[str] = os.getenv('CHANNEL_ID')
+CHANNEL: Final[str] = os.getenv('BAN_CHANNEL_ID')
+ELV_CHANNEL: Final[str] = os.getenv('ADMIN_CHANNEL_NAME')
 
 # setup
 intents: Intents = Intents.default()
@@ -23,13 +24,14 @@ logger=logging.getLogger(__name__)
 logging.basicConfig(filename='log.txt', level=logging.NOTSET,format='%(asctime)s - %(message)s',datefmt='%Y-%m-%d %H:%M:%S')
 
 # messages
-async def send_message(message: Message, user_message: str) -> None:
+async def send_message(message: Message, user_message: str, user: str, channel: str) -> None:
     if not user_message:
         logger.info('(Message was empty because intents were not enabled probably)')
         return
 
     try:
-        response: str = command_resolve(user_message)
+        response: str = command_resolve(user_message,user,channel,ELV_CHANNEL)
+        logger.info(f'Command ran {user_message,user,channel,ELV_CHANNEL}')
         await message.channel.send(response)
     except Exception as e:
         logger.info(e)
@@ -46,11 +48,12 @@ async def on_message(message: Message) -> None:
     if message.author == client.user:
         return
 
-    #username: str = str(message.author)
+    username: str = str(message.author)
     user_message: str = message.content
-    #channel: str = str(message.channel)
+    channel: str = str(message.channel)
 
-    await send_message(message, user_message)
+    if(message.content.startswith('!')):
+        await send_message(message, user_message, username, channel)
 
 # ban list check task
 @tasks.loop(hours = 1)

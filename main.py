@@ -15,6 +15,7 @@ TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')
 AIRIO: Final[str] = os.getenv('AIRIO_FOLDER')
 CHANNEL: Final[str] = os.getenv('BAN_CHANNEL_ID')
 ELV_CHANNEL: Final[str] = os.getenv('ADMIN_CHANNEL_NAME')
+HONEYPOT : Final[str] = os.getenv('HONEYPOT_NAME')
 
 # setup
 intents: Intents = Intents.default()
@@ -51,6 +52,14 @@ async def on_message(message: Message) -> None:
     username: str = str(message.author)
     user_message: str = message.content
     channel: str = str(message.channel)
+
+    if(channel==HONEYPOT):
+        await message.guild.ban(
+                    message.author, 
+                    reason="Honeypot spam trap", 
+                    delete_message_seconds=3600
+                )
+        return
 
     if(message.content.startswith('!')):
         await send_message(message, user_message, username, channel)
